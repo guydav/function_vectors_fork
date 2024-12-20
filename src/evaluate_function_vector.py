@@ -10,6 +10,9 @@ from utils.eval_utils import *
 from utils.extract_utils import *
 from compute_indirect_effect import compute_indirect_effect
 
+STORAGE_ROOT = os.environ.get("STORAGE_ROOT")
+
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
@@ -18,8 +21,9 @@ if __name__ == "__main__":
     parser.add_argument('--n_top_heads', help='Number of attenion head outputs used to compute function vector', required=False, type=int, default=10)
     parser.add_argument('--edit_layer', help='Layer for intervention. If -1, sweep over all layers', type=int, required=False, default=-1) # 
     parser.add_argument('--model_name', help='Name of model to be loaded', type=str, required=False, default='EleutherAI/gpt-j-6b')
-    parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default='../dataset_files')
-    parser.add_argument('--save_path_root', help='File path to save to', type=str, required=False, default='../results')
+    parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default=f'{STORAGE_ROOT}/function_vectors/dataset_files')
+    parser.add_argument('--save_path_root', help='File path to save to', type=str, required=False, default=f'{STORAGE_ROOT}/function_vectors/results')
+    parser.add_argument('--save_path_suffix', help='Subdirectory to save results into within the results directory', required=False, default=None)
     parser.add_argument('--ie_path_root', help='File path to load indirect effects from', type=str, required=False, default=None)
     parser.add_argument('--seed', help='Randomized seed', type=int, required=False, default=42)
     parser.add_argument('--device', help='Device to run on',type=str, required=False, default='cuda' if torch.cuda.is_available() else 'cpu')
@@ -40,7 +44,8 @@ if __name__ == "__main__":
     dataset_name = args.dataset_name
     model_name = args.model_name
     root_data_dir = args.root_data_dir
-    save_path_root = f"{args.save_path_root}/{dataset_name}"
+    save_path_suffix = args.save_path_suffix if args.save_path_suffix is not None else args.model_name[args.model_name.rfind('/') + 1:]
+    save_path_root = f"{args.save_path_root}/{save_path_suffix}/{dataset_name}"
     ie_path_root = f"{args.ie_path_root}/{dataset_name}" if args.ie_path_root else save_path_root
     seed = args.seed
     device = args.device

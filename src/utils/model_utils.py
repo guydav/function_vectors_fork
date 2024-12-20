@@ -24,7 +24,7 @@ def load_gpt_model_and_tokenizer(model_name:str, device='cuda'):
 
     print("Loading: ", model_name)
 
-    if model_name == 'gpt2-xl':
+    if 'gpt2' in model_name.lower():
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         tokenizer.pad_token = tokenizer.eos_token
         model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
